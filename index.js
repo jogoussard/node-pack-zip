@@ -50,7 +50,8 @@ function getTransitiveDependencies({ cwd }, dependencies, module) {
     if (!dependencies.find(d => d === module)) {
         dependencies.push(module);
         return getPackageInfo(at('node_modules/'+module+'/package.json'))
-            .then(modulePackage => Object.keys(modulePackage.dependencies || {}))
+            .then(modulePackage => Object.keys(modulePackage.dependencies || {})
+                                    .concat(Object.keys(modulePackage._phantomChildren || {})))
             .then(deps => { 
             	return Promise.map(deps, (dep) => { 
                		return getTransitiveDependencies({ cwd }, dependencies, dep);
@@ -66,7 +67,8 @@ function getPackageDependencies({ cwd }) {
     let at = resolvePathRelativeTo(cwd);
 	
     return getPackageInfo(at('package.json'))
-        .then(rootPackage => Object.keys(rootPackage.dependencies || {}))
+        .then(rootPackage => Object.keys(rootPackage.dependencies || {})
+                                .concat(Object.keys(rootPackage._phantomChildren || {})))
         .then(rootDependencies => {
 			let totalDependencies = [];            
         	return Promise.all(rootDependencies.map(dep => getTransitiveDependencies({ cwd }, totalDependencies, dep)))
