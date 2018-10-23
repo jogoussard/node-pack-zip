@@ -29,7 +29,7 @@ function getPackageInfo(packageFile) {
         .then(content => JSON.parse(content))
         .catch(error => {
             console.error(`Failed to read ${packageFile}`);
-            return Promise.reject(error);
+            return JSON.parse("{}");
         });
 }
 
