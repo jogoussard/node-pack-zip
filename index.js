@@ -73,7 +73,8 @@ function getPackageDependencies({ cwd }) {
 	
     return getPackageInfo(at('package.json'))
         .then(rootPackage => Object.keys(rootPackage.dependencies || {})
-                                .concat(Object.keys(rootPackage._phantomChildren || {})))
+          .concat(Object.keys(rootPackage._phantomChildren || {}))
+          .concat(Object.keys(rootPackage.bundledDependencies || {})))
         .then(rootDependencies => {
 			let totalDependencies = [];            
         	return Promise.all(rootDependencies.map(dep => getTransitiveDependencies({ cwd }, totalDependencies, dep)))
