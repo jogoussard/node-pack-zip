@@ -6,11 +6,10 @@ which did not support transitive dependencies (see [issue#2](https://github.com/
 
 It was mainly designed to help deploy nodejs packages in AWS lambdas.
 
-The .zip file will contain
+The .zip file will contain by default
 - All files not in `node_modules`
 - All files in `node_modules` that are part of a package listed in the `dependencies` field of your `package.json` and
 all their transitives dependencies
-- Files may be excluded by adding glob patterns to `.packignore`
 
 ## Installation
 
@@ -43,7 +42,20 @@ Create the .zip file containing _my-lambda_ and all its dependencies, ready to b
 npm run build-aws-lambda
 ```
 
+## Configuration
+You can customize included and excluded glob patterns using a `repackZipConfig`
+section in your package.json
+
+Ex:
+```$xslt
+"repackZipConfig": {
+  "includes": [ ...list of include glob patterns...],
+  "excludes": [ ...list of exclude glob patterns...]
+```
+
 ## Release notes
+0.2.7 - Added repackZipConfig support with excludes and includes.
+
 0.2.6 - Do not stop on missing package.json in dependency and support scoped modules.
 (contributions from [Enalmada](https://github.com/Enalmada) and [g00dnatur3](https://github.com/g00dnatur3)).
 

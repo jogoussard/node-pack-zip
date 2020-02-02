@@ -82,20 +82,32 @@ function getPackageDependencies({ cwd }) {
         .then(flatten);
 }
 
+function getPackageGlobs({cwd}) {
+  let at = resolvePathRelativeTo(cwd);
+  return getPackageInfo(at('package.json'))
+    .then(rootPackage => {
+      let includes = rootPackage.repackZipConfig ? (rootPackage.repackZipConfig.includes || []) : [];
+      let excludes = rootPackage.repackZipConfig ? (rootPackage.repackZipConfig.excludes || []) : [];
+      return { includes: includes, excludes: excludes};
+    });
+}
+
 function getGlobPatterns({ cwd }) {
     let at = resolvePathRelativeTo(cwd);
 
-    let includePatterns = getPackageDependencies({ cwd })
+    return getPackageGlobs({cwd}).then( ({includes, excludes}) => {
+      let includePatterns = getPackageDependencies({ cwd })
         .then(dependencies => dependencies.map(x => `node_modules/${x}/**`))
-        .then(includePatterns => DEFAULT_INCLUDE_PATTERNS.concat(includePatterns))
+        .then(includePatterns => DEFAULT_INCLUDE_PATTERNS.concat(includePatterns).concat(includes));
 
-    let ignorePatterns = readFile(at('.packignore'), 'utf-8')
+      let ignorePatterns = readFile(at('.packignore'), 'utf-8') // For backward compatibility
         .then(txt => txt.split('\n').map(line => line.trim()).filter(line => line.length > 0))
         .catch(error => error.code === 'ENOENT' ? Promise.resolve([]) : Promise.reject(error))
-        .then(ignorePatterns => DEFAULT_IGNORE_PATTERNS.concat(ignorePatterns))
+        .then(ignorePatterns => DEFAULT_IGNORE_PATTERNS.concat(ignorePatterns).concat(excludes));
 
-    return Promise.all([includePatterns, ignorePatterns])
+      return Promise.all([includePatterns, ignorePatterns])
         .then(([include, ignore]) => ({ include, ignore }));
+    });
 }
 
 function zipFiles({ cwd, destination }) {

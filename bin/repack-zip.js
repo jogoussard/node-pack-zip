@@ -17,6 +17,6 @@ if (args.length <= 2) {
             process.exit(1);
         });
 } else {
-    console.log('USAGE: pack-zip [source] [destination]');
+    console.log('USAGE: repack-zip [source] [destination]');
     process.exit(1);
 }
