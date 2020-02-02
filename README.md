@@ -8,8 +8,9 @@ It was mainly designed to help deploy nodejs packages in AWS lambdas.
 
 The .zip file will contain by default
 - All files not in `node_modules`
-- All files in `node_modules` that are part of a package listed in the `dependencies` field of your `package.json` and
-all their transitives dependencies
+- All files in `node_modules` that are part of a package listed in the `dependencies`
+, `bundledDependencies` fields of your `package.json` and all their transitives 
+dependencies or [`_phantomChildren`](https://rushjs.io/pages/advanced/phantom_deps/).
 
 ## Installation
 
@@ -54,6 +55,8 @@ Ex:
 ```
 
 ## Release notes
+0.2.8 - Added support for bundledDependencies.
+
 0.2.7 - Added repackZipConfig support with excludes and includes.
 
 0.2.6 - Do not stop on missing package.json in dependency and support scoped modules.
